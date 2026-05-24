@@ -30,7 +30,6 @@ public class FileManager {
             return null;
         }
     }
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void deleteSaveFile() {
         File file = new File(SAVE_FILE);
         if (file.exists()) {

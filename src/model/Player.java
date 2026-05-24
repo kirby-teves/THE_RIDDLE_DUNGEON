@@ -2,9 +2,10 @@ package model;
 import javax.swing.*;
 import java.io.Serializable;
 public class Player implements Serializable {
+    private static final int MAX_ROOMS = 6;
     private int hearts;
     private int currentRoomIndex;
-    private final int Max_Rooms = 6;
+
     public Player() {
         this.hearts = 3;
         this.currentRoomIndex = 0;
@@ -16,37 +17,51 @@ public class Player implements Serializable {
     }
     public void loseHeart() {
         this.hearts--;
+
         if (this.hearts == 1) {
             JOptionPane.showMessageDialog(null,
                     "⚠️ WARNING: You are down to your last heart! One more mistake and you die.",
                     "Low Health Warning",
                     JOptionPane.WARNING_MESSAGE);
+        } else if (this.isDead()) {
+            JOptionPane.showMessageDialog(null, "💀 You have run out of hearts!", "Game Over", JOptionPane.ERROR_MESSAGE);
         }
     }
     public int getHearts() {
         return hearts;
     }
+
     public boolean isDead() {
         return hearts <= 0;
     }
     public int getCurrentRoomIndex() {
-        return currentRoomIndex >= Max_Rooms ? 0 : currentRoomIndex;
+        return currentRoomIndex;
     }
     public boolean hasWon() {
-        return currentRoomIndex >= 6;
+        return currentRoomIndex == MAX_ROOMS;
     }
     public void nextRoom() {
         if (isDead()) {
-            System.out.println("❌ Cannot advance: Player is dead.");
+            JOptionPane.showMessageDialog(null, "You cannot move. You are dead.");
             return;
         }
+        if (this.currentRoomIndex >= MAX_ROOMS) {
+            JOptionPane.showMessageDialog(null, "🏁 You are already at the final room!");
+            return;
+        }
+        this.currentRoomIndex++; // Step 1: Move to the next room
 
         if (hasWon()) {
-            System.out.println("🎉 Already at the final room.");
-            return;
+            JOptionPane.showMessageDialog(null,
+                    "🏆 Congratulations! You reached Room 6 and won the game!",
+                    "Victory",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Step 2: Show the index we JUST moved to
+            JOptionPane.showMessageDialog(null,
+                    "🚶 You have entered Room " + this.currentRoomIndex,
+                    "Progress",
+                    JOptionPane.PLAIN_MESSAGE);
         }
-        this.currentRoomIndex++;
-        System.out.println("🚶 Player advanced sequentially to Room " + this.currentRoomIndex);
     }
 }
-
