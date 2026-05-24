@@ -1,52 +1,33 @@
 package model;
-
 import javax.swing.*;
-
-public class Player {
+import java.io.Serializable;
+public class Player implements Serializable {
     private int hearts;
     private int currentRoomIndex;
-
     public Player() {
-        this.hearts = 3; // Start with 3 hearts for Easy difficulty
+        this.hearts = 3;
         this.currentRoomIndex = 0;
     }
-
-    // Adjusts hearts when entering Room 3 (Medium) or Room 5 (Hard)
     public void adjustHeartsForRoom(int roomNumber) {
         if (roomNumber == 3 || roomNumber == 5) {
             this.hearts++;
         }
     }
-
-    public boolean loseHeart() {
+    public void loseHeart() {
         this.hearts--;
-        return this.hearts > 0;
     }
-
     public int getHearts() {
         return hearts;
     }
-
-    public boolean isAlive() {
-        return hearts > 0;
+    public boolean isDead() {
+        return hearts <= 0;
     }
-
     public int getCurrentRoomIndex() {
         return currentRoomIndex;
     }
-
     public boolean hasWon() {
         return currentRoomIndex >= 6;
     }
-
-    public void setCurrentRoomIndex(int index) {
-        this.currentRoomIndex = index;
-    }
-
-    public void setHearts(int hearts) {
-        this.hearts = hearts;
-    }
-
     public void nextRoom() {
         if (this.hearts == 1) {
             JOptionPane.showMessageDialog(null,

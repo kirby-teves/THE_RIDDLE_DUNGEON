@@ -1,5 +1,4 @@
 package panels;
-
 import mains.Application;
 import model.GameManager;
 import model.Player;
@@ -20,23 +19,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
-
-
 public class GamePanel extends JPanel {
-
-
     private static final Dimension PANEL_SIZE    = new Dimension(900, 650);
     private static final Dimension DIALOGUE_SIZE = new Dimension(900, 220);
     private static final Dimension BUTTON_SIZE   = new Dimension(80, 34);
-
     private static final Color COLOR_DARK_BG     = new Color(12, 10, 22);
     private static final Color COLOR_GOLD        = new Color(212, 175, 55);
     private static final Color COLOR_HINT        = new Color(255, 165, 0);
     private static final Color COLOR_CORRECT     = new Color(80, 220, 100);
     private static final Color COLOR_INPUT_BG    = new Color(25, 20, 45);
     private static final Color COLOR_HOVER_BG    = new Color(60, 50, 20);
-
     private static final Font FONT_HUD      = new Font("Monospaced", Font.BOLD, 15);
     private static final Font FONT_HEARTS   = new Font("SansSerif",  Font.BOLD, 22);
     private static final Font FONT_RIDDLE   = new Font("Serif",      Font.PLAIN, 17);
@@ -46,51 +38,38 @@ public class GamePanel extends JPanel {
     private static final Font FONT_INPUT    = new Font("Monospaced", Font.PLAIN, 15);
     private static final Font FONT_ENDTITLE = new Font("Serif",      Font.BOLD, 36);
     private static final Font FONT_ENDSUB   = new Font("SansSerif",  Font.PLAIN, 16);
-
     private static final String[] ROOM_IMAGE_FILES = {
-            "kirbyroom.jpg",
-            "deanverroom.jpg",
-            "jojanroom.jpg",
-            "hayesroom.jpg",
-            "awitroom.jpg",
-            "patroom.jpg"
+            "Images/kirbyroom.jpg",
+            "Images/deanverroom.jpg",
+            "Images/jojanroom.jpg",
+            "Images/hayesroom.jpg",
+            "Images/awitroom.jpg",
+            "Images/patroom.jpg"
     };
-
-
     private JLabel    lblHearts;
     private JLabel    lblRoomInfo;
     private JTextArea txtRiddle;
     private JTextArea lblHint;
     private JTextField txtInput;
-    private JButton   SOLVEButton;
-    private JButton   Map;
+    private JButton   solveButton;
+    private JButton   mapButton;
     private JButton   btnSave;
-
-
     private JPanel imagePaneRef;
-
-
-
     private final Application application;
     private GameManager game;
-    private Player      player;
-    private Room[]      rooms;
+    private transient Player      player;
+    private transient Room[]      rooms;
     private boolean[]   completedRooms;
     private boolean     isProcessingAnswer = false;
-    private Runnable    onReturnToMenu;
-
-    private final BufferedImage[] roomImages = new BufferedImage[6];
-    private BufferedImage currentBg = null;
-
-
-
+    private transient Runnable    onReturnToMenu;
+    private final transient BufferedImage[] roomImages = new BufferedImage[6];
+    private transient BufferedImage currentBg = null;
+    @SuppressWarnings("this-escape")
     public GamePanel(Application application, GameManager game) {
         this.application = application;
         this.game        = game;
         initializeGame();
     }
-
-
     public void updateGameInstance(GameManager game) {
         if (game != null) {
             this.game   = game;
@@ -98,13 +77,10 @@ public class GamePanel extends JPanel {
         }
         loadLevel();
     }
-
     public void setOnReturnToMenu(Runnable callback) {
         this.onReturnToMenu = callback;
     }
-
-
-    public void initializeGame() {
+    private void initializeGame() {
         setLayout(new BorderLayout());
         setOpaque(true);
         setBackground(COLOR_DARK_BG);
@@ -122,14 +98,11 @@ public class GamePanel extends JPanel {
         revalidate();
         repaint();
     }
-
-
     private int countCompletedRooms() {
         int count = 0;
         for (boolean b : completedRooms) if (b) count++;
         return count;
     }
-
     private void createRooms() {
         rooms    = new Room[6];
         rooms[0] = new Room(1, "Easy",   new Kirby());
@@ -139,15 +112,11 @@ public class GamePanel extends JPanel {
         rooms[4] = new Room(5, "Hard",   new Awit());
         rooms[5] = new Room(6, "Hard",   new Patrick());
     }
-
-
     private void loadRoomImages() {
         for (int i = 0; i < ROOM_IMAGE_FILES.length; i++) {
             roomImages[i] = tryLoadImage(ROOM_IMAGE_FILES[i]);
         }
     }
-
-
     private BufferedImage tryLoadImage(String name) {
 
         for (String prefix : new String[]{ "/", "/images/", "/assets/" }) {
@@ -159,8 +128,6 @@ public class GamePanel extends JPanel {
                 } catch (IOException ignored) {}
             }
         }
-
-
         for (String path : buildImageCandidates(name)) {
             File f = new File(path);
             if (f.exists()) {
@@ -170,11 +137,9 @@ public class GamePanel extends JPanel {
                 } catch (IOException ignored) {}
             }
         }
-
         System.err.printf("[GamePanel] Image not found: %s  (user.dir=%s)%n", name, System.getProperty("user.dir"));
         return null;
     }
-
     private String[] buildImageCandidates(String name) {
         String wd  = System.getProperty("user.dir");
         String sep = File.separator;
@@ -189,14 +154,10 @@ public class GamePanel extends JPanel {
                 wd + sep + "src" + sep + "main" + sep + "resources" + sep + name,
         };
     }
-
-
     private void buildUI() {
         add(buildImagePane(),    BorderLayout.CENTER);
         add(buildDialoguePane(), BorderLayout.SOUTH);
     }
-
-
     private JPanel buildImagePane() {
         JPanel pane = new JPanel(new BorderLayout()) {
             @Override
@@ -204,10 +165,7 @@ public class GamePanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
                 int pw = getWidth(), ph = getHeight();
-
-
                 g2.setColor(COLOR_DARK_BG);
                 g2.fillRect(0, 0, pw, ph);
 
@@ -218,7 +176,6 @@ public class GamePanel extends JPanel {
 
                 g2.dispose();
             }
-
             private void paintBackgroundImage(Graphics2D g2, int pw, int ph) {
                 int iw = currentBg.getWidth(), ih = currentBg.getHeight();
                 double scale = (double) pw / iw;
@@ -234,8 +191,6 @@ public class GamePanel extends JPanel {
                 int drawX = (pw - dw) / 2;
                 g2.drawImage(currentBg, drawX, 0, dw, dh, null);
             }
-
-
             private void paintVignettes(Graphics2D g2, int pw, int ph) {
 
                 g2.setPaint(new GradientPaint(
@@ -250,7 +205,6 @@ public class GamePanel extends JPanel {
                 g2.fillRect(0, 0, pw, 70);
             }
         };
-
         pane.setOpaque(true);
         pane.setBackground(COLOR_DARK_BG);
         pane.add(buildHudBar(), BorderLayout.NORTH);
@@ -258,7 +212,6 @@ public class GamePanel extends JPanel {
         imagePaneRef = pane;
         return pane;
     }
-
     private JPanel buildHudBar() {
         lblHearts = new JLabel("❤️❤️❤️");
         lblHearts.setFont(FONT_HEARTS);
@@ -275,7 +228,6 @@ public class GamePanel extends JPanel {
         bar.add(lblRoomInfo, BorderLayout.EAST);
         return bar;
     }
-
     private JPanel buildDialoguePane() {
         JPanel outer = new JPanel(new BorderLayout(0, 8)) {
             @Override
@@ -295,7 +247,6 @@ public class GamePanel extends JPanel {
         outer.add(buildAnswerRow(),  BorderLayout.SOUTH);
         return outer;
     }
-
     private JPanel buildTextStack() {
         txtRiddle = createDialogueTextArea(FONT_RIDDLE, Color.WHITE);
         lblHint   = createDialogueTextArea(FONT_HINT,   COLOR_HINT);
@@ -307,7 +258,6 @@ public class GamePanel extends JPanel {
         stack.add(lblHint,   BorderLayout.SOUTH);
         return stack;
     }
-
     private JPanel buildAnswerRow() {
         JLabel answer = new JLabel("Answer: ");
         answer.setFont(FONT_LABEL);
@@ -322,15 +272,15 @@ public class GamePanel extends JPanel {
                 BorderFactory.createLineBorder(COLOR_GOLD, 1),
                 BorderFactory.createEmptyBorder(5, 8, 5, 8)));
 
-        SOLVEButton = makeGoldButton("SOLVE");
-        Map         = makeGoldButton("MAP");
+        solveButton = makeGoldButton("SOLVE");
+        mapButton   = makeGoldButton("MAP");
         btnSave     = makeGoldButton("SAVE");
 
         JPanel buttons = new JPanel(new GridLayout(1, 3, 6, 0));
         buttons.setOpaque(true);
         buttons.setBackground(COLOR_DARK_BG);
-        buttons.add(SOLVEButton);
-        buttons.add(Map);
+        buttons.add(solveButton);
+        buttons.add(mapButton);
         buttons.add(btnSave);
 
         JPanel row = new JPanel(new BorderLayout(8, 0));
@@ -341,8 +291,6 @@ public class GamePanel extends JPanel {
         row.add(buttons,  BorderLayout.EAST);
         return row;
     }
-
-
     private JTextArea createDialogueTextArea(Font font, Color foreground) {
         JTextArea area = new JTextArea();
         area.setEditable(false);
@@ -355,8 +303,6 @@ public class GamePanel extends JPanel {
         area.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         return area;
     }
-
-
     private JButton makeGoldButton(String text) {
         JButton btn = new JButton(text);
         btn.setFont(FONT_BUTTON);
@@ -382,14 +328,11 @@ public class GamePanel extends JPanel {
         });
         return btn;
     }
-
-
-
     private void setupListeners() {
-        if (SOLVEButton != null) SOLVEButton.addActionListener(_ -> checkAnswer());
+        if (solveButton != null) solveButton.addActionListener(_ -> checkAnswer());
         if (txtInput    != null) txtInput.addActionListener(_ -> checkAnswer());
 
-        if (Map != null) Map.addActionListener(_ -> {
+        if (mapButton != null) mapButton.addActionListener(_ -> {
             if (application != null) application.showMap();
         });
 
@@ -402,9 +345,9 @@ public class GamePanel extends JPanel {
     }
 
 
-    public void loadLevel() {
+    private void loadLevel() {
         if (player.hasWon())   { showEndScreen(true);  return; }
-        if (!player.isAlive()) { showEndScreen(false); return; }
+        if (player.isDead()) { showEndScreen(false); return; }
 
         int  idx     = player.getCurrentRoomIndex();
         Room current = rooms[idx];
@@ -425,10 +368,9 @@ public class GamePanel extends JPanel {
         revalidate();
         repaint();
     }
-
     private void checkAnswer() {
         if (isProcessingAnswer || player == null
-                || player.hasWon() || !player.isAlive()) return;
+                || player.hasWon() || player.isDead()) return;
         if (rooms[player.getCurrentRoomIndex()].isSolved()) return;
 
         isProcessingAnswer = true;
@@ -444,7 +386,6 @@ public class GamePanel extends JPanel {
             onWrongAnswer(current);
         }
     }
-
     private void onCorrectAnswer(Room current) {
         int idx = player.getCurrentRoomIndex();
         completedRooms[idx] = true;
@@ -463,13 +404,12 @@ public class GamePanel extends JPanel {
             });
         });
     }
-
     private void onWrongAnswer(Room current) {
         player.loseHeart();
         setHintText("❌ WRONG! You lose a heart.", Color.RED);
         if (lblHearts != null) lblHearts.setText(buildHeartsString());
 
-        if (!player.isAlive()) {
+        if (player.isDead()) {
             scheduleDelayed(1500, () -> {
                 isProcessingAnswer = false;
                 setInputsEnabled(true);
@@ -483,61 +423,49 @@ public class GamePanel extends JPanel {
             });
         }
     }
-
     private void showEndScreen(boolean won) {
         JDialog dialog = new JDialog(
                 SwingUtilities.getWindowAncestor(this),
                 "Game Over",
                 Dialog.ModalityType.APPLICATION_MODAL);
-
         dialog.setLayout(new GridBagLayout());
         dialog.getContentPane().setBackground(COLOR_DARK_BG);
         dialog.setUndecorated(true);
         dialog.getRootPane().setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 2));
-
         JLabel msgLabel = new JLabel(won ? "🏆  ESCAPED!" : "💀  YOU DIED");
         msgLabel.setFont(FONT_ENDTITLE);
         msgLabel.setForeground(won ? Color.YELLOW : Color.RED);
-
-        JLabel subLabel = new JLabel(
-                won ? "You conquered the dungeon!" : "The dungeon claims another soul.");
+        JLabel subLabel = new JLabel(won ? "You conquered the dungeon!" : "The dungeon claims another soul.");
         subLabel.setFont(FONT_ENDSUB);
         subLabel.setForeground(Color.WHITE);
-
         JButton returnBtn = makeGoldButton("Return to Menu");
         returnBtn.setPreferredSize(new Dimension(160, 36));
         returnBtn.addActionListener(_ -> {
             dialog.dispose();
             if (onReturnToMenu != null) onReturnToMenu.run();
         });
-
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 40, 15, 40);
         gbc.gridy = 0; dialog.add(msgLabel,   gbc);
         gbc.gridy = 1; dialog.add(subLabel,   gbc);
         gbc.gridy = 2; dialog.add(returnBtn,  gbc);
-
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
-
     private String buildHeartsString() {
         return "❤️".repeat(player.getHearts());
     }
-
     private void setHintText(String text, Color color) {
         if (lblHint == null) return;
         lblHint.setText(text);
         lblHint.setForeground(color);
         lblHint.setBackground(COLOR_DARK_BG);
     }
-
     private void setInputsEnabled(boolean enabled) {
         if (txtInput    != null) txtInput.setEnabled(enabled);
-        if (SOLVEButton != null) SOLVEButton.setEnabled(enabled);
+        if (solveButton != null) solveButton.setEnabled(enabled);
     }
-
     private void scheduleDelayed(int delayMs, Runnable action) {
         Timer timer = new Timer(delayMs, _ -> action.run());
         timer.setRepeats(false);

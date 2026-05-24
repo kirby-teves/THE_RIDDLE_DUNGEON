@@ -1,16 +1,10 @@
 package util;
-
 import model.GameManager;
 
 import java.io.*;
 import javax.swing.JOptionPane;
-
 public class FileManager {
     private static final String SAVE_FILE = "save.dat";
-
-    /**
-     * Saves the current GameManager state to disk.
-     */
     public static void saveGame(GameManager game) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
             oos.writeObject(game);
@@ -20,10 +14,6 @@ public class FileManager {
                     "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    /**
-     * Loads game state from disk. Returns null if file doesn't exist or is corrupted.
-     */
     public static GameManager loadGame() {
         File file = new File(SAVE_FILE);
         if (!file.exists()) return null;
@@ -38,13 +28,4 @@ public class FileManager {
         }
     }
 
-    /**
-     * Deletes the save file (used when player dies).
-     */
-    public static void deleteSaveFile() {
-        File file = new File(SAVE_FILE);
-        if (file.exists()) {
-            file.delete();
-        }
-    }
 }

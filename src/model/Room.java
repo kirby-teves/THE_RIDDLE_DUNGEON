@@ -1,21 +1,17 @@
 package model;
-
 import gamemasters.GameMaster;
 import javax.swing.*;
-
 public class Room {
     private final int roomNumber;
     private final String difficultyLabel;
     private final GameMaster gameMaster;
     private boolean isSolved;
-
     public Room(int roomNumber, String difficultyLabel, GameMaster gameMaster) {
         this.roomNumber = roomNumber;
         this.difficultyLabel = difficultyLabel;
         this.gameMaster = gameMaster;
         this.isSolved = false;
     }
-
     public boolean attemptAnswer(String playerAnswer) {
         if (playerAnswer == null || playerAnswer.trim().isEmpty()) {
             return false;
@@ -29,7 +25,6 @@ public class Room {
         }
         return false;
     }
-
     public void awardKeyReward(JComponent parent) {
         JOptionPane.showMessageDialog(
                 parent,
@@ -38,7 +33,6 @@ public class Room {
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
-
     public boolean isSolved()            { return isSolved; }
     public int getRoomNumber()           { return roomNumber; }
     public String getDifficultyLabel()   { return difficultyLabel; }

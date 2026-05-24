@@ -1,5 +1,4 @@
 package gamemasters;
-
 import model.IRiddle;
 import java.io.File;
 import java.io.FileReader;
@@ -9,9 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
-
 public abstract class GameMaster {
-    private final String name;
     private final List<IRiddle> riddlePool;
     private IRiddle currentRiddle;
     private static final Random random = new Random();
@@ -20,7 +17,6 @@ public abstract class GameMaster {
     static {
         loadEnv();
     }
-
     private static void loadEnv() {
         String[] paths = {".env", "src/.env"};
 
@@ -35,7 +31,6 @@ public abstract class GameMaster {
                 }
             }
         }
-
         try (InputStream stream = GameMaster.class.getClassLoader().getResourceAsStream(".env")) {
             if (stream != null) {
                 env.load(stream);
@@ -46,9 +41,7 @@ public abstract class GameMaster {
             System.err.println("Failed to load riddles from classpath .env: " + e.getMessage());
         }
     }
-
-    public GameMaster(String name, List<IRiddle> riddlePool) {
-        this.name = name;
+    public GameMaster(List<IRiddle> riddlePool) {
         this.riddlePool = new ArrayList<>();
 
         for (IRiddle riddle : riddlePool) {
@@ -61,7 +54,6 @@ public abstract class GameMaster {
 
         selectRandomRiddle();
     }
-
     public static String getEnv(String key){
         String value = env.getProperty(key);
         if(value != null){
@@ -74,7 +66,6 @@ public abstract class GameMaster {
         }
         return "";
     }
-
     private void selectRandomRiddle(){
         if(!riddlePool.isEmpty()){
             this.currentRiddle = riddlePool.get(random.nextInt(riddlePool.size()));
@@ -82,9 +73,6 @@ public abstract class GameMaster {
             this.currentRiddle = new model.RiddleImpl("Error loading riddles.", "error", "Check .env file.");
         }
     }
-
-    public String getName() { return name; }
     public IRiddle getRiddle() { return currentRiddle; }
-    public void rerollRiddle() { selectRandomRiddle(); }
     public abstract String greet();
 }

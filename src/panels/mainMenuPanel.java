@@ -1,5 +1,4 @@
 package panels;
-
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,18 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import mains.Application;
 import model.GameManager;
-
-public class mainMenuPanel extends JPanel {
-
-    private BufferedImage backgroundImg;
-    private JLabel title;
-    private JButton newGame;
-    private JButton loadGame;
-    private JButton Exit;
+public class MainMenuPanel extends JPanel {
+    private transient BufferedImage backgroundImg;
     private GameManager game;
-    private Application app;
-
-    public mainMenuPanel(Application app, GameManager game) {
+    private final Application app;
+    @SuppressWarnings("this-escape")
+    public MainMenuPanel(Application app, GameManager game) {
         this.app = app;
         this.game = game;
         setLayout(new BorderLayout());
@@ -27,88 +20,58 @@ public class mainMenuPanel extends JPanel {
         loadBackgroundImage();
         setupUI();
     }
-
-    //updateGameInstance method
     public void updateGameInstance(GameManager game){
         this.game = game;
     }
-
     private void loadBackgroundImage() {
+        String imagePath = "Images/mainmenu.jpg";
         try {
-            File imageFile = new File("src/mainmenu.jpg");
-            backgroundImg = ImageIO.read(imageFile);
+            backgroundImg = ImageIO.read(new File(imagePath));
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null,
-                    "Could not load background image. Please ensure 'src/mainmenu.jpg' exists.",
-                    "Image Load Error", JOptionPane.WARNING_MESSAGE);
+            System.err.println("Could not load background image. Please ensure '" + imagePath + "' exists.");
             backgroundImg = null;
         }
     }
-
     private void setupUI() {
         setOpaque(false);
         removeAll();
-
-        if (title == null) {
-            title = new JLabel("THE RIDDLE DUNGEON");
-        }
-        if (newGame == null) {
-            newGame = new JButton("New Game");
-        }
-        if (loadGame == null) {
-            loadGame = new JButton("Load Game");
-        }
-        if (Exit == null) {
-            Exit = new JButton("Exit");
-        }
-
-        if (title != null) {
-            title.setText("THE RIDDLE DUNGEON");
-            title.setFont(new Font("Serif", Font.BOLD, 36));
-            title.setForeground(new Color(212, 175, 55));
-            title.setHorizontalAlignment(SwingConstants.CENTER);
-        }
-
+        JLabel title = new JLabel("THE RIDDLE DUNGEON");
+        title.setFont(new Font("Serif", Font.BOLD, 36));
+        title.setForeground(new Color(212, 175, 55));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel buttonPanel = new JPanel(new GridLayout(3, 1, 10, 10));
         buttonPanel.setOpaque(false);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(50, 300, 50, 300));
-
-        if (newGame != null) {
-            styleButton(newGame);
-            newGame.addActionListener(e ->{
-                if(game != null){
-                    game.resetGame();
-                    app.setGame(game);
-                }
+        JButton newGame = new JButton("New Game");
+        styleButton(newGame);
+        newGame.addActionListener(_ ->{
+            if(game != null){
+                game.resetGame();
+                app.setGame(game);
+            }
+            app.showGame();
+        });
+        buttonPanel.add(newGame);
+        JButton loadGame = new JButton("Load Game");
+        styleButton(loadGame);
+        loadGame.addActionListener(_ ->{
+            GameManager loadedProgress = GameManager.loadProgress();
+            if(loadedProgress != null){
+                this.game = loadedProgress;
+                app.setGame(loadedProgress);
                 app.showGame();
-            });
-            buttonPanel.add(newGame);
-        }
-        if(loadGame != null) {
-            styleButton(loadGame);
-            loadGame.addActionListener(e ->{
-                GameManager loadedProgress = GameManager.loadProgress();
-                if(loadedProgress != null){
-                    this.game = loadedProgress;
-                    app.setGame(loadedProgress);
-                    app.showGame();
-                } else {
-                    JOptionPane.showMessageDialog(this, "No save file Found.");
-                }
-            });
-            buttonPanel.add(loadGame);
-        }
-
-        if (Exit != null) {
-            styleButton(Exit);
-            Exit.addActionListener(e -> System.exit(0));
-            buttonPanel.add(Exit);
-        }
-
-        if (title != null) add(title, BorderLayout.NORTH);
+            } else {
+                JOptionPane.showMessageDialog(this, "No save file Found.");
+            }
+        });
+        buttonPanel.add(loadGame);
+        JButton exit = new JButton("Exit");
+        styleButton(exit);
+        exit.addActionListener(_ -> System.exit(0));
+        buttonPanel.add(exit);
+        add(title, BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
     }
-
     private void styleButton(JButton button) {
         button.setFont(new Font("Serif", Font.BOLD, 18));
         button.setForeground(new Color(212, 175, 55));
@@ -119,12 +82,10 @@ public class mainMenuPanel extends JPanel {
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setPreferredSize(new Dimension(300, 50));
     }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-
         if (backgroundImg != null) {
             g2d.drawImage(backgroundImg, 0, 0, getWidth(), getHeight(), this);
         } else {
@@ -132,14 +93,8 @@ public class mainMenuPanel extends JPanel {
             g2d.fillRect(0, 0, getWidth(), getHeight());
         }
     }
-
     public void refresh() {
-        // Re-apply styles or update dynamic content if needed
         revalidate();
         repaint();
     }
-
-    public JButton getNewGame() { return newGame; }
-    public JButton getLoadGame() { return loadGame; }
-    public JButton getExit() { return Exit; }
 }

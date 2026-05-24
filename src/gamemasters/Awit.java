@@ -10,9 +10,8 @@ public class Awit extends GameMaster {
             .map(r -> (IRiddle) r)
             .toList();
     public Awit() {
-        super("Awit", RIDDLE_POOL);
+        super(RIDDLE_POOL);
     }
-
     @Override
     public String greet() {
         return "Awit whispers, 'Listen closely to my riddle...'";
