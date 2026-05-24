@@ -1,4 +1,5 @@
 package model;
+import util.FileManager;
 import javax.swing.*;
 import java.io.Serializable;
 public class Player implements Serializable {
@@ -25,6 +26,9 @@ public class Player implements Serializable {
                     JOptionPane.WARNING_MESSAGE);
         } else if (this.isDead()) {
             JOptionPane.showMessageDialog(null, "💀 You have run out of hearts!", "Game Over", JOptionPane.ERROR_MESSAGE);
+        }
+        if (this.hearts <= 0) {
+            FileManager.deleteSaveFile();
         }
     }
     public int getHearts() {
