@@ -6,20 +6,25 @@ public class Player implements Serializable {
     private static final int MAX_ROOMS = 6;
     private int hearts;
     private int currentRoomIndex;
+    private int lastHeartAwardedRoom = -1;
 
     public Player() {
         this.hearts = 3;
         this.currentRoomIndex = 0;
     }
     public void adjustHeartsForRoom(int roomNumber) {
-        if (roomNumber == 3 || roomNumber == 5) {
-            this.hearts++;
+        // Only award a heart if this room hasn't given one yet
+        if (roomNumber != lastHeartAwardedRoom) {
+            if (roomNumber == 3 || roomNumber == 5) {
+                this.hearts++;
+                this.lastHeartAwardedRoom = roomNumber;
+            }
         }
     }
     public void loseHeart() {
-        this.hearts--;
+        hearts--;
 
-        if (this.hearts == 1) {
+        if (hearts == 1) {
             JOptionPane.showMessageDialog(null,
                     "⚠️ WARNING: You are down to your last heart! One more mistake and you die.",
                     "Low Health Warning",

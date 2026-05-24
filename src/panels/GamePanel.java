@@ -345,23 +345,27 @@ public class GamePanel extends JPanel {
 
 
     private void loadLevel() {
-        if (player.hasWon())   { showEndScreen(true);  return; }
+        if (player.hasWon()) { showEndScreen(true);  return; }
         if (player.isDead()) { showEndScreen(false); return; }
-
-        int  idx     = player.getCurrentRoomIndex();
+        int idx = player.getCurrentRoomIndex();
         Room current = rooms[idx];
-        player.adjustHeartsForRoom(current.getRoomNumber());
-
+        player.adjustHeartsForRoom(idx);
         currentBg = (idx < roomImages.length) ? roomImages[idx] : null;
         if (imagePaneRef != null) imagePaneRef.repaint();
 
-        if (lblHearts   != null) lblHearts.setText(buildHeartsString());
-        if (lblRoomInfo != null) lblRoomInfo.setText(
-                "Room " + current.getRoomNumber() + "  |  " + current.getDifficultyLabel() + "  |  Completed: " + countCompletedRooms());
-        if (txtRiddle   != null) txtRiddle.setText(
-                current.getGreeting() + "\n\n" + current.getRiddleQuestion());
-        if (lblHint     != null) setHintText("Hint: " + current.getRiddleHint(), COLOR_HINT);
-        if (txtInput    != null) { txtInput.setText(""); txtInput.requestFocus(); }
+        if (lblHearts != null) lblHearts.setText(buildHeartsString());
+        if (lblRoomInfo != null) {
+            lblRoomInfo.setText("Room " + current.getRoomNumber() +
+                    "  |  " + current.getDifficultyLabel() +
+                    "  |  Completed: " + countCompletedRooms());
+        }
+        if (txtRiddle != null) {
+            txtRiddle.setText(current.getGreeting() + "\n\n" + current.getRiddleQuestion());
+        }
+        if (txtInput != null) {
+            txtInput.setText("");
+            txtInput.requestFocus();
+        }
 
         isProcessingAnswer = false;
         revalidate();
