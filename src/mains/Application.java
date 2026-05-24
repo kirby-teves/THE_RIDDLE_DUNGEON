@@ -40,6 +40,7 @@ public class Application extends JFrame {
     public void showMainMenu() {
         if (game == null) {
             game = GameManager.getInstance();
+            game.resetGame();
         }
         game.resetGame();
         mainMenu.updateGameInstance(game);

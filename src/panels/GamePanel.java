@@ -63,22 +63,43 @@ public class GamePanel extends JPanel {
     private transient Runnable    onReturnToMenu;
     private final transient BufferedImage[] roomImages = new BufferedImage[6];
     private transient BufferedImage currentBg = null;
+    private boolean listenersSetup = false;
     @SuppressWarnings("this-escape")
     public GamePanel(Application application, GameManager game) {
         this.application = application;
         this.game        = game;
         initializeGame();
     }
+    /**
+     * Called by MainApplication when switching to Game view.
+     * Ensures the panel is fully reset with the latest GameManager instance.
+     */
     public void updateGameInstance(GameManager game) {
         if (game != null) {
-            this.game   = game;
+            this.game = game;
             this.player = game.getPlayer();
         }
-        loadLevel();
+            resetGameState(); // Hard reset to fix "Solve button not working"
     }
+
     public void setOnReturnToMenu(Runnable callback) {
         this.onReturnToMenu = callback;
     }
+
+    /**
+     * Resets all game logic, UI states, and listeners.
+     */
+    private void resetGameState() {
+        // 1. Reset Logic
+        this.player = this.game.getPlayer();
+        this.isProcessingAnswer = false;
+
+        createRooms();
+        loadLevel();
+        revalidate();
+        repaint();
+    }
+
     private void initializeGame() {
         setLayout(new BorderLayout());
         setOpaque(true);
@@ -87,14 +108,11 @@ public class GamePanel extends JPanel {
 
         loadRoomImages();
         buildUI();
-
-        player = game.getPlayer();
-        createRooms();
-        setupListeners();
-        loadLevel();
-
-        revalidate();
-        repaint();
+        if (!listenersSetup) {
+            setupListeners();
+            listenersSetup = true;
+        }
+        resetGameState();
     }
     private int countCompletedRooms() {
         int count = 0;
@@ -368,6 +386,10 @@ public class GamePanel extends JPanel {
         if (txtInput != null) {
             txtInput.setText("");
             txtInput.requestFocus();
+            txtInput.setEnabled(true); // Ensure enabled
+        }
+        if (solveButton != null) {
+            solveButton.setEnabled(true); // Ensure enabled
         }
 
         isProcessingAnswer = false;
