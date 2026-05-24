@@ -1,5 +1,5 @@
 package mains;
-import panels.MainMenuPanel;
+import panels.mainMenuPanel;
 import panels.GamePanel;
 import panels.MapPanel;
 import model.GameManager;
@@ -10,7 +10,7 @@ public class Application extends JFrame {
     private GameManager game;
     private CardLayout cardLayout;
     private JPanel mainPanel;
-    private MainMenuPanel mainMenu;
+    private mainMenuPanel mainMenu;
     private GamePanel gamePanel;
     private MapPanel mapPanel;
     @SuppressWarnings("this-escape")
@@ -27,7 +27,7 @@ public class Application extends JFrame {
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-        mainMenu = new MainMenuPanel(this,game);
+        mainMenu = new mainMenuPanel(this,game);
         gamePanel = new GamePanel(this,game);
         mapPanel = new MapPanel(this);
         gamePanel.setOnReturnToMenu(this::showMainMenu);
@@ -39,13 +39,10 @@ public class Application extends JFrame {
         setContentPane(mainPanel);
     }
     public void showMainMenu() {
-        GameManager saved = GameManager.loadProgress();
-        if (saved != null) {
-            game = saved;
-        } else {
+        if (game == null) {
             game = GameManager.getInstance();
-            game.resetGame();
         }
+        game.resetGame();
         mainMenu.updateGameInstance(game);
         cardLayout.show(mainPanel, "MENU");
         mainMenu.refresh();

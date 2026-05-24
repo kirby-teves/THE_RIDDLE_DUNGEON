@@ -1,10 +1,12 @@
 package util;
-import model.GameManager;
 
+import model.GameManager;
 import java.io.*;
 import javax.swing.JOptionPane;
+
 public class FileManager {
     private static final String SAVE_FILE = "save.dat";
+
     public static void saveGame(GameManager game) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
             oos.writeObject(game);
@@ -14,6 +16,7 @@ public class FileManager {
                     "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     public static GameManager loadGame() {
         File file = new File(SAVE_FILE);
         if (!file.exists()) return null;
@@ -27,5 +30,11 @@ public class FileManager {
             return null;
         }
     }
-
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void deleteSaveFile() {
+        File file = new File(SAVE_FILE);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 }

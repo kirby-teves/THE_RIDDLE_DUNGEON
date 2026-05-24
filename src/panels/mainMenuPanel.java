@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import mains.Application;
 import model.GameManager;
-public class MainMenuPanel extends JPanel {
+public class mainMenuPanel extends JPanel {
     private transient BufferedImage backgroundImg;
     private GameManager game;
     private final Application app;
@@ -17,7 +17,7 @@ public class MainMenuPanel extends JPanel {
     private static final Color BUTTON_HOVER_BG = new Color(78, 51, 13, 235);
     private static final Color SHADOW = new Color(0, 0, 0, 185);
     @SuppressWarnings("this-escape")
-    public MainMenuPanel(Application app, GameManager game) {
+    public mainMenuPanel(Application app, GameManager game) {
         this.app = app;
         this.game = game;
         setLayout(new BorderLayout());
