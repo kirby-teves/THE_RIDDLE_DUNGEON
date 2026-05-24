@@ -4,6 +4,7 @@ import java.io.Serializable;
 public class Player implements Serializable {
     private int hearts;
     private int currentRoomIndex;
+    private final int Max_Rooms = 6;
     public Player() {
         this.hearts = 3;
         this.currentRoomIndex = 0;
@@ -29,15 +30,23 @@ public class Player implements Serializable {
         return hearts <= 0;
     }
     public int getCurrentRoomIndex() {
-        return currentRoomIndex;
+        return currentRoomIndex >= Max_Rooms ? 0 : currentRoomIndex;
     }
     public boolean hasWon() {
         return currentRoomIndex >= 6;
     }
     public void nextRoom() {
-        if(!isDead()){
-            this.currentRoomIndex++;
+        if (isDead()) {
+            System.out.println("❌ Cannot advance: Player is dead.");
+            return;
+        }
+
+        if (hasWon()) {
+            System.out.println("🎉 Already at the final room.");
+            return;
         }
         this.currentRoomIndex++;
+        System.out.println("🚶 Player advanced sequentially to Room " + this.currentRoomIndex);
     }
 }
+

@@ -23,7 +23,7 @@ public class GameManager implements Serializable {
     public boolean[] getCompletedRooms() { return completedRooms.clone(); }
 
     public void completeRoom(int index) {
-        if (index >= 0 && index < 6) {
+        if (index >= 0 && index < 6 ) {
             completedRooms[index] = true;
         }
     }

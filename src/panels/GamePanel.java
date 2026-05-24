@@ -430,7 +430,7 @@ public class GamePanel extends JPanel {
         dialog.getContentPane().setBackground(COLOR_DARK_BG);
         dialog.setUndecorated(true);
         dialog.getRootPane().setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 2));
-        JLabel msgLabel = new JLabel(won ? "🏆  ESCAPED!" : "💀  YOU DIED");
+        JLabel msgLabel = new JLabel(won ? "ESCAPED!" : "YOU DIED");
         msgLabel.setFont(FONT_ENDTITLE);
         msgLabel.setForeground(won ? Color.YELLOW : Color.RED);
         JLabel subLabel = new JLabel(won ? "You conquered the dungeon!" : "The dungeon claims another soul.");
