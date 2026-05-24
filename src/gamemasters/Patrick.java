@@ -2,11 +2,7 @@ package gamemasters;
 import model.IRiddle;
 import model.RiddleImpl;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.IntStream;
 
 public class Patrick extends GameMaster {
@@ -23,7 +19,4 @@ public class Patrick extends GameMaster {
     public String greet() {
         return "Patrick smiles and presents a riddle...";
     }
-
-    @Override
-    public void startGame() {}
 }

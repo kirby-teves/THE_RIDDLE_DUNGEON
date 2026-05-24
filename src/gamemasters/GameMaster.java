@@ -51,7 +51,6 @@ public abstract class GameMaster {
         this.name = name;
         this.riddlePool = new ArrayList<>();
 
-        // Filter out invalid riddles
         for (IRiddle riddle : riddlePool) {
             if (riddle != null &&
                     riddle.getQuestion() != null && !riddle.getQuestion().trim().isEmpty() &&
@@ -80,7 +79,6 @@ public abstract class GameMaster {
         if(!riddlePool.isEmpty()){
             this.currentRiddle = riddlePool.get(random.nextInt(riddlePool.size()));
         } else {
-            // Fallback riddle if pool is empty due to .env errors
             this.currentRiddle = new model.RiddleImpl("Error loading riddles.", "error", "Check .env file.");
         }
     }
@@ -89,5 +87,4 @@ public abstract class GameMaster {
     public IRiddle getRiddle() { return currentRiddle; }
     public void rerollRiddle() { selectRandomRiddle(); }
     public abstract String greet();
-    public abstract void startGame();
 }
