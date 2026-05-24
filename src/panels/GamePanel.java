@@ -283,7 +283,7 @@ public class GamePanel extends JPanel {
                 g.setColor(COLOR_DARK_BG);
                 g.fillRect(0, 0, getWidth(), getHeight());
                 g.setColor(COLOR_GOLD);
-                g.fillRect(0, 0, getWidth(), 2); // gold top rule
+                g.fillRect(0, 0, getWidth(), 2);
             }
         };
         outer.setOpaque(true);
