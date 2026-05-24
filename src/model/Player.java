@@ -49,7 +49,7 @@ public class Player implements Serializable {
             JOptionPane.showMessageDialog(null, "🏁 You are already at the final room!");
             return;
         }
-        this.currentRoomIndex++; // Step 1: Move to the next room
+        this.currentRoomIndex++;
 
         if (hasWon()) {
             JOptionPane.showMessageDialog(null,
@@ -57,7 +57,6 @@ public class Player implements Serializable {
                     "Victory",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            // Step 2: Show the index we JUST moved to
             JOptionPane.showMessageDialog(null,
                     "🚶 You have entered Room " + this.currentRoomIndex,
                     "Progress",
