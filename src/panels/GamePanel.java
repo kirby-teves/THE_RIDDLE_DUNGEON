@@ -57,14 +57,10 @@ public class GamePanel extends JPanel {
     };
 
 
-    private JPanel    gamePanel;
-    private JLabel    title;
-
     private JLabel    lblHearts;
     private JLabel    lblRoomInfo;
     private JTextArea txtRiddle;
     private JTextArea lblHint;
-    private JLabel    answer;
     private JTextField txtInput;
     private JButton   SOLVEButton;
     private JButton   Map;
@@ -75,7 +71,7 @@ public class GamePanel extends JPanel {
 
 
 
-    private Application application;
+    private final Application application;
     private GameManager game;
     private Player      player;
     private Room[]      rooms;
@@ -127,6 +123,13 @@ public class GamePanel extends JPanel {
         repaint();
     }
 
+
+    private int countCompletedRooms() {
+        int count = 0;
+        for (boolean b : completedRooms) if (b) count++;
+        return count;
+    }
+
     private void createRooms() {
         rooms    = new Room[6];
         rooms[0] = new Room(1, "Easy",   new Kirby());
@@ -158,20 +161,7 @@ public class GamePanel extends JPanel {
         }
 
 
-        String wd  = System.getProperty("user.dir");
-        String sep = File.separator;
-        String[] candidates = {
-                name,
-                "resources"                                + sep + name,
-                "src" + sep + "resources"                  + sep + name,
-                "src" + sep + "main" + sep + "resources"   + sep + name,
-                wd + sep + name,
-                wd + sep + "resources"                     + sep + name,
-                wd + sep + "src" + sep + "resources"       + sep + name,
-                wd + sep + "src" + sep + "main" + sep + "resources" + sep + name,
-        };
-
-        for (String path : candidates) {
+        for (String path : buildImageCandidates(name)) {
             File f = new File(path);
             if (f.exists()) {
                 try {
@@ -181,8 +171,23 @@ public class GamePanel extends JPanel {
             }
         }
 
-        System.err.printf("[GamePanel] Image not found: %s  (user.dir=%s)%n", name, wd);
+        System.err.printf("[GamePanel] Image not found: %s  (user.dir=%s)%n", name, System.getProperty("user.dir"));
         return null;
+    }
+
+    private String[] buildImageCandidates(String name) {
+        String wd  = System.getProperty("user.dir");
+        String sep = File.separator;
+        return new String[]{
+                name,
+                "resources"                              + sep + name,
+                "src" + sep + "resources"                + sep + name,
+                "src" + sep + "main" + sep + "resources" + sep + name,
+                wd + sep + name,
+                wd + sep + "resources"                   + sep + name,
+                wd + sep + "src" + sep + "resources"     + sep + name,
+                wd + sep + "src" + sep + "main" + sep + "resources" + sep + name,
+        };
     }
 
 
@@ -304,7 +309,7 @@ public class GamePanel extends JPanel {
     }
 
     private JPanel buildAnswerRow() {
-        answer = new JLabel("Answer: ");
+        JLabel answer = new JLabel("Answer: ");
         answer.setFont(FONT_LABEL);
         answer.setForeground(COLOR_GOLD);
 
@@ -381,14 +386,14 @@ public class GamePanel extends JPanel {
 
 
     private void setupListeners() {
-        if (SOLVEButton != null) SOLVEButton.addActionListener(e -> checkAnswer());
-        if (txtInput    != null) txtInput.addActionListener(e -> checkAnswer());
+        if (SOLVEButton != null) SOLVEButton.addActionListener(_ -> checkAnswer());
+        if (txtInput    != null) txtInput.addActionListener(_ -> checkAnswer());
 
-        if (Map != null) Map.addActionListener(e -> {
+        if (Map != null) Map.addActionListener(_ -> {
             if (application != null) application.showMap();
         });
 
-        if (btnSave != null) btnSave.addActionListener(e -> {
+        if (btnSave != null) btnSave.addActionListener(_ -> {
             if (game != null) {
                 game.saveProgress();
                 JOptionPane.showMessageDialog(this, "Game saved.");
@@ -410,7 +415,7 @@ public class GamePanel extends JPanel {
 
         if (lblHearts   != null) lblHearts.setText(buildHeartsString());
         if (lblRoomInfo != null) lblRoomInfo.setText(
-                "Room " + current.getRoomNumber() + "  |  " + current.getDifficultyLabel());
+                "Room " + current.getRoomNumber() + "  |  " + current.getDifficultyLabel() + "  |  Completed: " + countCompletedRooms());
         if (txtRiddle   != null) txtRiddle.setText(
                 current.getGreeting() + "\n\n" + current.getRiddleQuestion());
         if (lblHint     != null) setHintText("Hint: " + current.getRiddleHint(), COLOR_HINT);
@@ -424,6 +429,7 @@ public class GamePanel extends JPanel {
     private void checkAnswer() {
         if (isProcessingAnswer || player == null
                 || player.hasWon() || !player.isAlive()) return;
+        if (rooms[player.getCurrentRoomIndex()].isSolved()) return;
 
         isProcessingAnswer = true;
         setInputsEnabled(false);
@@ -444,12 +450,17 @@ public class GamePanel extends JPanel {
         completedRooms[idx] = true;
         if (game != null) game.completeRoom(idx);
 
-        setHintText("✅ CORRECT! The door unlocks...", COLOR_CORRECT);
+        setHintText("✅ CORRECT!", COLOR_CORRECT);
 
         scheduleDelayed(1500, () -> {
-            player.nextRoom();
-            setInputsEnabled(true);
-            loadLevel();
+            current.awardKeyReward(this);
+            setHintText("🚪 The door unlocks...", COLOR_CORRECT);
+            scheduleDelayed(1000, () -> {
+                player.nextRoom();
+                setInputsEnabled(true);
+                isProcessingAnswer = false;
+                loadLevel();
+            });
         });
     }
 
@@ -495,7 +506,7 @@ public class GamePanel extends JPanel {
 
         JButton returnBtn = makeGoldButton("Return to Menu");
         returnBtn.setPreferredSize(new Dimension(160, 36));
-        returnBtn.addActionListener(e -> {
+        returnBtn.addActionListener(_ -> {
             dialog.dispose();
             if (onReturnToMenu != null) onReturnToMenu.run();
         });
@@ -512,9 +523,7 @@ public class GamePanel extends JPanel {
     }
 
     private String buildHeartsString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < player.getHearts(); i++) sb.append("❤️");
-        return sb.toString();
+        return "❤️".repeat(player.getHearts());
     }
 
     private void setHintText(String text, Color color) {
@@ -530,7 +539,7 @@ public class GamePanel extends JPanel {
     }
 
     private void scheduleDelayed(int delayMs, Runnable action) {
-        Timer timer = new Timer(delayMs, e -> action.run());
+        Timer timer = new Timer(delayMs, _ -> action.run());
         timer.setRepeats(false);
         timer.start();
     }

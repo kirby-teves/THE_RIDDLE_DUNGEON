@@ -1,7 +1,8 @@
 package model;
 
 import gamemasters.GameMaster;
-import javax.swing.JOptionPane;
+
+import javax.swing.*;
 
 public class Room {
     // === Room Identity ===
@@ -36,10 +37,10 @@ public class Room {
     }
 
     // === Show Key Reward Popup ===
-    public void awardKeyReward() {
+    public void awardKeyReward(JComponent parent) {
         // Call this ONLY after checkAnswer() returns true
         JOptionPane.showMessageDialog(
-                null,
+                parent,
                 "🗝️ Congratulations!\n\nYou obtained a Key!",
                 "Chest Opened!",
                 JOptionPane.INFORMATION_MESSAGE
