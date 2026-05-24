@@ -59,7 +59,6 @@ public class GamePanel extends JPanel {
     private GameManager game;
     private transient Player      player;
     private transient Room[]      rooms;
-    private boolean[]   completedRooms;
     private boolean     isProcessingAnswer = false;
     private transient Runnable    onReturnToMenu;
     private final transient BufferedImage[] roomImages = new BufferedImage[6];
@@ -89,8 +88,7 @@ public class GamePanel extends JPanel {
         loadRoomImages();
         buildUI();
 
-        player         = new Player();
-        completedRooms = new boolean[6];
+        player = game.getPlayer();
         createRooms();
         setupListeners();
         loadLevel();
@@ -100,7 +98,8 @@ public class GamePanel extends JPanel {
     }
     private int countCompletedRooms() {
         int count = 0;
-        for (boolean b : completedRooms) if (b) count++;
+        if (game == null) return count;
+        for (boolean b : game.getCompletedRooms()) if (b) count++;
         return count;
     }
     private void createRooms() {
@@ -388,7 +387,6 @@ public class GamePanel extends JPanel {
     }
     private void onCorrectAnswer(Room current) {
         int idx = player.getCurrentRoomIndex();
-        completedRooms[idx] = true;
         if (game != null) game.completeRoom(idx);
 
         setHintText("✅ CORRECT!", COLOR_CORRECT);

@@ -14,8 +14,14 @@ import java.net.URL;
 public class MapPanel extends JPanel {
     private final Application mainApp;
     private JButton[] roomButtons;
+    private JLabel currentRoomLabel;
+    private JLabel roomsLeftLabel;
     private transient BufferedImage bgImage;
-    private static final Color OVERLAY_COLOR = new Color(0, 0, 0, 0);
+    private static final Color COLOR_GOLD = new Color(212, 175, 55);
+    private static final Color COLOR_DARK_GOLD = new Color(142, 112, 36);
+    private static final Color COLOR_PANEL = new Color(8, 8, 12, 155);
+    private static final Color COLOR_LOCKED = new Color(145, 145, 145);
+    private static final Color OVERLAY_COLOR = new Color(0, 0, 0, 85);
     @SuppressWarnings("this-escape")
     public MapPanel(Application app) {
         this.mainApp = app;
@@ -74,7 +80,7 @@ public class MapPanel extends JPanel {
             int drawY = (panelH - drawH) / 2;
             g2d.drawImage(bgImage, drawX, drawY, drawW, drawH, null);
         } else {
-            g2d.setColor(new Color(212, 175, 55, 0));
+            g2d.setColor(new Color(20, 18, 24));
             g2d.fillRect(0, 0, getWidth(), getHeight());
         }
         g2d.setColor(OVERLAY_COLOR);
@@ -84,14 +90,31 @@ public class MapPanel extends JPanel {
     private void setupUI() {
         setLayout(new BorderLayout(0, 15));
 
-        setBorder(BorderFactory.createLineBorder(new Color(212, 175, 55, 0), 2));
+        setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 2));
         setPreferredSize(new Dimension(300, 500));
 
         JLabel title = new JLabel("DUNGEON MAP", SwingConstants.CENTER);
         title.setFont(new Font("Serif", Font.BOLD, 24));
-        title.setForeground(new Color(212, 175, 55, 0));
+        title.setForeground(COLOR_GOLD);
         title.setOpaque(false);
-        add(title, BorderLayout.NORTH);
+
+        currentRoomLabel = new JLabel("Current Room: 1", SwingConstants.CENTER);
+        currentRoomLabel.setFont(new Font("Monospaced", Font.BOLD, 16));
+        currentRoomLabel.setForeground(Color.WHITE);
+
+        roomsLeftLabel = new JLabel("Rooms Left: 6", SwingConstants.CENTER);
+        roomsLeftLabel.setFont(new Font("Monospaced", Font.BOLD, 14));
+        roomsLeftLabel.setForeground(COLOR_GOLD);
+
+        JPanel header = new JPanel(new GridLayout(3, 1, 0, 4));
+        header.setOpaque(true);
+        header.setBackground(COLOR_PANEL);
+        header.setBorder(BorderFactory.createEmptyBorder(12, 20, 10, 20));
+        header.add(title);
+        header.add(currentRoomLabel);
+        header.add(roomsLeftLabel);
+        add(header, BorderLayout.NORTH);
+
         JPanel btnContainer = new JPanel(new GridLayout(6, 1, 0, 10));
         btnContainer.setOpaque(false);
         btnContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -100,8 +123,8 @@ public class MapPanel extends JPanel {
             roomButtons[i] = new JButton("ROOM " + (i + 1));
             roomButtons[i].setFont(new Font("Serif", Font.BOLD, 16));
             roomButtons[i].setFocusPainted(false);
-            roomButtons[i].setOpaque(false);
-            roomButtons[i].setContentAreaFilled(false);
+            roomButtons[i].setOpaque(true);
+            roomButtons[i].setContentAreaFilled(true);
             addHoverEffect(roomButtons[i]);
             btnContainer.add(roomButtons[i]);
         }
@@ -114,37 +137,53 @@ public class MapPanel extends JPanel {
 
     private void styleButton(JButton btn) {
         btn.setFont(new Font("SansSerif", Font.BOLD, 14));
-        btn.setForeground(new Color(212, 175, 55, 0));
-        btn.setBackground(new Color(0, 0, 0, 0));
-        btn.setBorder(BorderFactory.createLineBorder(new Color(212, 175, 55, 0), 2));
+        btn.setForeground(COLOR_GOLD);
+        btn.setBackground(new Color(0, 0, 0, 150));
+        btn.setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 2));
         btn.setFocusPainted(false);
-        btn.setContentAreaFilled(false);
-        btn.setOpaque(false);
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
     public void refresh() {
         GameManager game = GameManager.getInstance();
         boolean[] completed = game.getCompletedRooms();
         int currentRoomIndex = game.getPlayer().getCurrentRoomIndex();
+        int completedCount = 0;
+        for (boolean roomCompleted : completed) {
+            if (roomCompleted) completedCount++;
+        }
+        int roomsLeft = Math.max(0, completed.length - completedCount);
+
+        if (currentRoomLabel != null) {
+            currentRoomLabel.setText(currentRoomIndex >= completed.length
+                    ? "Current Room: Escaped"
+                    : "Current Room: " + (currentRoomIndex + 1));
+        }
+        if (roomsLeftLabel != null) {
+            roomsLeftLabel.setText("Rooms Left: " + roomsLeft);
+        }
+
         for (int i = 0; i < 6; i++) {
             JButton btn = roomButtons[i];
             if (btn == null) continue;
             boolean isCurrent   = (i == currentRoomIndex);
             boolean isCompleted = completed[i];
-            btn.setBorder(null);
+            btn.setBackground(new Color(0, 0, 0, 155));
             btn.setForeground(Color.WHITE);
             if (isCompleted) {
-                btn.setText("✓ ROOM " + (i + 1));
-                btn.setForeground(new Color(212, 175, 55, 0));
-                btn.setBorder(BorderFactory.createLineBorder(new Color(212, 175, 55, 0), 2));
+                btn.setText("UNLOCKED  ROOM " + (i + 1));
+                btn.setForeground(COLOR_GOLD);
+                btn.setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 2));
             } else if (isCurrent) {
-                btn.setText("⬤ ROOM " + (i + 1));
-                btn.setForeground(new Color(212, 175, 55, 0));
-                btn.setBorder(BorderFactory.createLineBorder(new Color(212, 175, 55, 0), 2));
+                btn.setText("CURRENT   ROOM " + (i + 1));
+                btn.setForeground(Color.WHITE);
+                btn.setBackground(new Color(92, 70, 18, 210));
+                btn.setBorder(BorderFactory.createLineBorder(COLOR_GOLD, 3));
             } else {
-                btn.setText("X ROOM " + (i + 1));
-                btn.setForeground(new Color(100, 100, 100, 0));
-                btn.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60, 0), 1));
+                btn.setText("LOCKED    ROOM " + (i + 1));
+                btn.setForeground(COLOR_LOCKED);
+                btn.setBorder(BorderFactory.createLineBorder(new Color(70, 70, 70), 1));
             }
         }
         revalidate();
@@ -167,9 +206,9 @@ public class MapPanel extends JPanel {
         });
     }
     private static class DungeonButtonUI extends BasicButtonUI {
-        private static final Color HOVER_FILL   = new Color(212, 175, 55, 0);
-        private static final Color HOVER_BORDER = new Color(255, 215, 80, 3);
-        private static final Color HOVER_GLOW   = new Color(212, 175, 55, 0);
+        private static final Color HOVER_FILL   = new Color(212, 175, 55, 55);
+        private static final Color HOVER_BORDER = new Color(255, 215, 80);
+        private static final Color HOVER_GLOW   = new Color(212, 175, 55, 35);
         @Override
         public void paint(Graphics g, JComponent c) {
             AbstractButton btn = (AbstractButton) c;
@@ -200,12 +239,12 @@ public class MapPanel extends JPanel {
             if (btn == null) continue;
 
             btn.setFont(new Font("Monospaced", Font.BOLD, 16));
-            btn.setForeground(new Color(212, 175, 55, 0));
-            btn.setBackground(new Color(30, 30, 30, 0));
-            btn.setBorder(BorderFactory.createLineBorder(new Color(14, 13, 9, 0), 3));
+            btn.setForeground(COLOR_GOLD);
+            btn.setBackground(new Color(0, 0, 0, 155));
+            btn.setBorder(BorderFactory.createLineBorder(COLOR_DARK_GOLD, 2));
             btn.setFocusPainted(false);
-            btn.setContentAreaFilled(false);
-            btn.setOpaque(false);
+            btn.setContentAreaFilled(true);
+            btn.setOpaque(true);
             addHoverEffect(btn);
         }
 
