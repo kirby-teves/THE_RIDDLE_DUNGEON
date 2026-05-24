@@ -7,7 +7,6 @@ public class Player implements Serializable {
     private int hearts;
     private int currentRoomIndex;
     private int lastHeartAwardedRoom = -1;
-
     public Player() {
         this.hearts = 3;
         this.currentRoomIndex = 0;
@@ -72,10 +71,9 @@ public class Player implements Serializable {
                     "Victory",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            // Step 2: Show the index we JUST moved to
             JOptionPane.showMessageDialog(null,
-                    "🚶 You have entered Room " + this.currentRoomIndex,
-                    "Progress",
+                    "🚶 You are now leaving the Room " + this.currentRoomIndex,
+                    "Good Luck !!!",
                     JOptionPane.PLAIN_MESSAGE);
         }
     }
