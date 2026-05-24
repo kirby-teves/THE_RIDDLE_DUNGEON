@@ -1,5 +1,4 @@
 package model;
-import util.FileManager;
 import javax.swing.*;
 import java.io.Serializable;
 public class Player implements Serializable {
