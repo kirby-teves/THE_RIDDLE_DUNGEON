@@ -13,7 +13,6 @@ public class Application extends JFrame {
     private MainMenuPanel mainMenu;
     private GamePanel gamePanel;
     private MapPanel mapPanel;
-    @SuppressWarnings("this-escape")
     public Application() {
         game = GameManager.getInstance();
         initializeGUI();
