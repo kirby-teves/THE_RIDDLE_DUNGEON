@@ -362,6 +362,9 @@ public class GamePanel extends JPanel {
         if (txtRiddle != null) {
             txtRiddle.setText(current.getGreeting() + "\n\n" + current.getRiddleQuestion());
         }
+        if (lblHint != null) {
+            setHintText("Hint: " + current.getRiddleHint(), COLOR_HINT);
+        }
         if (txtInput != null) {
             txtInput.setText("");
             txtInput.requestFocus();

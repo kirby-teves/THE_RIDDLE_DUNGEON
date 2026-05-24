@@ -13,27 +13,31 @@ public class Player implements Serializable {
         this.currentRoomIndex = 0;
     }
     public void adjustHeartsForRoom(int roomNumber) {
-        // Only award a heart if this room hasn't given one yet
         if (roomNumber != lastHeartAwardedRoom) {
-            if (roomNumber == 3 || roomNumber == 5) {
-                this.hearts++;
+            if (roomNumber == 0) {
+                this.hearts = 3;
                 this.lastHeartAwardedRoom = roomNumber;
+            } else if (roomNumber == 2) {
+                this.hearts = 4;
+                this.lastHeartAwardedRoom = roomNumber;
+                JOptionPane.showMessageDialog(null, "❤️ Medium Level: Hearts set to 4!");
+            } else if (roomNumber == 4) {
+                this.hearts = 5;
+                this.lastHeartAwardedRoom = roomNumber;
+                JOptionPane.showMessageDialog(null, "❤️ Hard Level: Hearts set to 5!");
             }
         }
     }
-    public void loseHeart() {
-        hearts--;
 
-        if (hearts == 1) {
+    public void loseHeart() {
+        this.hearts--;
+        if (this.hearts == 1) {
             JOptionPane.showMessageDialog(null,
-                    "⚠️ WARNING: You are down to your last heart! One more mistake and you die.",
-                    "Low Health Warning",
+                    "⚠️ WARNING: Last heart!",
+                    "Low Health",
                     JOptionPane.WARNING_MESSAGE);
         } else if (this.isDead()) {
-            JOptionPane.showMessageDialog(null, "💀 You have run out of hearts!", "Game Over", JOptionPane.ERROR_MESSAGE);
-        }
-        if (this.hearts <= 0) {
-            FileManager.deleteSaveFile();
+            JOptionPane.showMessageDialog(null, "💀 Game Over!", "Death", JOptionPane.ERROR_MESSAGE);
         }
     }
     public int getHearts() {
@@ -58,8 +62,7 @@ public class Player implements Serializable {
             JOptionPane.showMessageDialog(null, "🏁 You are already at the final room!");
             return;
         }
-        this.currentRoomIndex++; // Step 1: Move to the next room
-
+        this.currentRoomIndex++;
         if (hasWon()) {
             JOptionPane.showMessageDialog(null,
                     "🏆 Congratulations! You reached Room 6 and won the game!",
