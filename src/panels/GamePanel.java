@@ -75,7 +75,7 @@ public class GamePanel extends JPanel {
             this.game = game;
             this.player = game.getPlayer();
         }
-            resetGameState(); // Hard reset to fix "Solve button not working"
+            resetGameState();
     }
 
     public void setOnReturnToMenu(Runnable callback) {
@@ -83,7 +83,7 @@ public class GamePanel extends JPanel {
     }
 
     private void resetGameState() {
-        // 1. Reset Logic
+
         this.player = this.game.getPlayer();
         this.isProcessingAnswer = false;
 
