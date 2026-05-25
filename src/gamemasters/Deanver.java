@@ -14,6 +14,6 @@ public class Deanver extends GameMaster {
     }
     @Override
     public String greet(){
-        return "Denver challenges you with a riddle...";
+        return "Deanver challenges you with a riddle...";
     }
 }

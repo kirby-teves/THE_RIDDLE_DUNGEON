@@ -70,10 +70,6 @@ public class GamePanel extends JPanel {
         this.game        = game;
         initializeGame();
     }
-    /**
-     * Called by MainApplication when switching to Game view.
-     * Ensures the panel is fully reset with the latest GameManager instance.
-     */
     public void updateGameInstance(GameManager game) {
         if (game != null) {
             this.game = game;
@@ -86,9 +82,6 @@ public class GamePanel extends JPanel {
         this.onReturnToMenu = callback;
     }
 
-    /**
-     * Resets all game logic, UI states, and listeners.
-     */
     private void resetGameState() {
         // 1. Reset Logic
         this.player = this.game.getPlayer();
